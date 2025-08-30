@@ -1,0 +1,25 @@
+{
+  "name": "strapi-railway-deploy",
+  "version": "1.0.0",
+  "description": "Strapi backend with webhook server for Railway deployment",
+  "main": "webhook-server.js",
+  "scripts": {
+    "build": "cd strapi-backend && npm install && npm run build",
+    "start": "cd strapi-backend && npm run start",
+    "develop": "cd strapi-backend && npm run develop",
+    "webhook": "node webhook-server.js",
+    "install-deps": "cd strapi-backend && npm install"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=6.0.0"
+  },
+  "keywords": ["strapi", "railway", "webhook"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.1.0",
+    "firebase": "^12.1.0",
+    "firebase-admin": "^13.4.0"
+  }
+}

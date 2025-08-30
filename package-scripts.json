@@ -1,0 +1,10 @@
+{
+  "name": "local-webhook-test",
+  "version": "1.0.0",
+  "description": "Local testing setup for webhook flow",
+  "scripts": {
+    "start:receiver": "cd receiver && npm install && WEBHOOK_SECRET=c3723e4c0958c4fceee01b3c0c8e8e6758c05d4280c2da5e8906c7a30d5bd999 PUBSUB_TOPIC=strapi-events node index.js",
+    "start:strapi": "cd strapi-backend && npm run develop",
+    "test:webhook": "curl -X POST http://localhost:8080/webhook -H 'Content-Type: application/json' -H 'x-strapi-signature: c3723e4c0958c4fceee01b3c0c8e8e6758c05d4280c2da5e8906c7a30d5bd999' -d '{\"event\": \"entry.create\", \"model\": \"api::post.post\", \"entry\": {\"id\": 999, \"title\": \"Test Post\", \"documentId\": \"test-doc-123\"}}'"
+  }
+}

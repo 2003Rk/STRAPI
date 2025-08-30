@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Japanese Points Dashboard - Vue.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.3.4/vue.global.prod.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="app">
+        <japanese-dashboard></japanese-dashboard>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+
+        const JapaneseDashboard = {
+            template: `
+                <div class="flex h-screen bg-gray-100">
+                    <!-- Sidebar -->
+                    <div class="w-44 bg-green-400 text-white flex flex-col">
+                        <!-- Logo -->
+                        <div class="p-4 text-center">
+                            <div class="w-16 h-16 bg-green-300 rounded-full flex items-center justify-center mx-auto mb-2">
+                                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+                                    <span class="text-green-400 text-sm">△</span>
+                                </div>
+                            </div>
+                            <div class="text-xs">モバイル学習</div>
+                        </div>
+
+                        <!-- Navigation -->
+                        <nav class="flex-1 px-2">
+                            <div class="space-y-1">
+                                <div class="flex items-center px-3 py-2 bg-pink-300 rounded text-sm">
+                                    <i data-lucide="home" class="w-4 h-4 mr-2"></i>
+                                    ホーム
+                                </div>
+                                <div class="flex items-center px-3 py-2 text-sm hover:bg-green-500 rounded cursor-pointer">
+                                    <i data-lucide="user" class="w-4 h-4 mr-2"></i>
+                                    マイページ
+                                </div>
+                                <div class="flex items-center px-3 py-2 text-sm hover:bg-green-500 rounded cursor-pointer">
+                                    <i data-lucide="settings" class="w-4 h-4 mr-2"></i>
+                                    各種設定
+                                </div>
+                                <div class="flex items-center px-3 py-2 text-sm hover:bg-green-500 rounded cursor-pointer">
+                                    <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
+                                    問題作成
+                                </div>
+                                <div class="flex items-center px-3 py-2 text-sm hover:bg-green-500 rounded cursor-pointer">
+                                    <i data-lucide="edit" class="w-4 h-4 mr-2"></i>
+                                    学習履歴
+                                </div>
+                                <div class="flex items-center px-3 py-2 text-sm hover:bg-green-500 rounded cursor-pointer">
+                                    <i data-lucide="mail" class="w-4 h-4 mr-2"></i>
+                                    お問い合わせ
+                                </div>
+                            </div>
+                        </nav>
+
+                        <!-- User Profile -->
+                        <div class="p-3 border-t border-green-300">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 bg-gray-300 rounded-full mr-2"></div>
+                                <span class="text-xs">田中太郎</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content -->
+                    <div class="flex-1 flex flex-col">
+                        <!-- Header -->
+                        <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i data-lucide="settings" class="w-5 h-5 mr-2 text-green-500"></i>
+                                <h1 class="text-lg font-medium">管理画面</h1>
+                            </div>
+                            <button class="flex items-center text-gray-600 hover:text-gray-800">
+                                <i data-lucide="log-out" class="w-4 h-4 mr-1"></i>
+                                ログアウト
+                            </button>
+                        </header>
+
+                        <!-- Content -->
+                        <main class="flex-1 p-6">
+                            <!-- Point Confirmation Banner -->
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                                <div class="flex items-center">
+                                    <i data-lucide="heart" class="w-5 h-5 text-green-500 mr-2"></i>
+                                    <span class="font-medium">ポイント確認</span>
+                                </div>
+                                <div class="mt-1 text-sm text-gray-600">
+                                    来店や内覧、学習コンテンツの視聴でポイントが貯まる！
+                                </div>
+                                <div class="text-sm text-gray-600">
+                                    貯まったポイントは景品向け設定サービスと交換OK！
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- Points Section -->
+                                <div class="bg-white rounded-lg p-6">
+                                    <div class="flex items-center mb-4">
+                                        <i data-lucide="heart" class="w-5 h-5 text-green-500 mr-2"></i>
+                                        <span class="font-medium">運用中のポイント</span>
+                                    </div>
+                                    <div class="text-center">
+                                        <div class="text-4xl font-bold text-gray-800 mb-2">{{ currentPoints }}</div>
+                                        <div class="text-lg text-gray-600">pt</div>
+                                        <div class="text-sm text-gray-400 mt-2">{{ currentDate }}</div>
+                                    </div>
+                                </div>
+
+                                <!-- Reward Section -->
+                                <div class="bg-white rounded-lg p-6">
+                                    <div class="text-sm text-gray-600 mb-2">現在のポイントで交える商品</div>
+                                    <h3 class="font-bold text-lg mb-4">60型ワイドテレビ</h3>
+                                    <div class="mb-4">
+                                        <div class="w-full h-24 bg-gray-100 rounded flex items-center justify-center">
+                                            <div class="w-32 h-16 bg-black rounded"></div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-yellow-400 text-center py-2 rounded text-sm font-medium">
+                                        300ポイントまで{{ 300 - currentPoints }}pt
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- How to Earn Points -->
+                            <div class="mt-8">
+                                <h2 class="text-xl font-bold mb-6">来店・内覧・学習でポイントが貯まる！</h2>
+                                
+                                <div class="mb-6">
+                                    <div class="flex items-center mb-4">
+                                        <span class="text-orange-500 mr-2">✓</span>
+                                        <span class="font-medium">簡単ポイントを貯める</span>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <!-- Learning Blog -->
+                                    <div class="text-center">
+                                        <div class="flex items-center justify-center mb-3">
+                                            <i data-lucide="check-circle" class="w-8 h-8 text-green-500"></i>
+                                        </div>
+                                        <div class="mb-2">学習ブログで貯める</div>
+                                        <div class="w-full bg-green-200 rounded-full h-2 mb-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 75%"></div>
+                                        </div>
+                                        <div class="bg-yellow-400 px-3 py-1 rounded text-xs">毎日更新</div>
+                                    </div>
+
+                                    <!-- Store Visit -->
+                                    <div class="text-center">
+                                        <div class="flex items-center justify-center mb-3">
+                                            <i data-lucide="check-circle" class="w-8 h-8 text-green-500"></i>
+                                        </div>
+                                        <div class="mb-2">来店で貯める</div>
+                                        <div class="w-full bg-green-200 rounded-full h-2 mb-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 100%"></div>
+                                        </div>
+                                        <div class="bg-yellow-400 px-3 py-1 rounded text-xs">来店予約</div>
+                                    </div>
+
+                                    <!-- Internal Purchase -->
+                                    <div class="text-center">
+                                        <div class="flex items-center justify-center mb-3">
+                                            <i data-lucide="check-circle" class="w-8 h-8 text-green-500"></i>
+                                        </div>
+                                        <div class="mb-2">内覧で貯める</div>
+                                        <div class="w-full bg-green-200 rounded-full h-2 mb-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 50%"></div>
+                                        </div>
+                                        <div class="bg-yellow-400 px-3 py-1 rounded text-xs">内覧予約</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                </div>
+            `,
+            data() {
+                return {
+                    currentPoints: 128,
+                    currentDate: '2025/8/24'
+                };
+            },
+            mounted() {
+                // Initialize Lucide icons
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            }
+        };
+
+        createApp({
+            components: {
+                JapaneseDashboard
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>

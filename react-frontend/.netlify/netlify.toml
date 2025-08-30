@@ -1,0 +1,31 @@
+plugins = []
+functionsDirectory = "/Users/rahul/Desktop/FREELANCING/Strapi/react-frontend/netlify/functions"
+functionsDirectoryOrigin = "config-v1"
+headers = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "/Users/rahul/Desktop/FREELANCING/Strapi/react-frontend/buil"
+publishOrigin = "config"
+commandOrigin = "config"
+base = "/Users/rahul/Desktop/FREELANCING/Strapi/react-frontend"
+command = "npm run build"
+functions = "/Users/rahul/Desktop/FREELANCING/Strapi/react-frontend/netlify/functions"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]

@@ -1,0 +1,20 @@
+{
+  "name": "strapi-webhook-receiver",
+  "version": "1.0.0",
+  "description": "Cloud Run service to receive Strapi webhooks and publish to Pub/Sub",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "@google-cloud/pubsub": "^4.0.7",
+    "crypto": "^1.0.1"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "",
+  "license": "ISC"
+}

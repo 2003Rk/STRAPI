@@ -1,0 +1,11 @@
+[phases.build]
+cmds = [
+  "cd strapi-backend && npm ci",
+  "cd strapi-backend && npm run build"
+]
+
+[phases.start]
+cmd = "cd strapi-backend && npm run start"
+
+[variables]
+NODE_ENV = "production"
