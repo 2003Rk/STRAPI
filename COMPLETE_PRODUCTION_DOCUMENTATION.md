@@ -463,8 +463,15 @@ ADMIN_JWT_SECRET=admin-jwt-secret
 JWT_SECRET=jwt-secret
 
 # Firebase Admin
+#### Firebase Admin
 FIREBASE_PROJECT_ID=terasuestate
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+
+# サービスアカウント設定
+# Service Account files (never commit these):
+# - firebase-service-account.json (root directory)
+# - strapi-backend/config/firebase-service-account.json
+# Use templates provided: *.json.template
 ```
 
 ### 🌐 Railway デプロイメント
@@ -565,7 +572,22 @@ export default defineConfig({
 })
 ```
 
-### 🔄 CI/CD パイプライン
+### � セキュリティ設定スクリプト
+
+プロジェクトルートディレクトリに `setup-security.sh` スクリプトを提供しています：
+
+```bash
+# セキュリティ設定を確認
+./setup-security.sh
+
+# 必要なファイルの設定:
+# 1. firebase-service-account.json (rootディレクトリ)
+# 2. strapi-backend/config/firebase-service-account.json
+# 3. .env (開発用)
+# 4. .env.production (本番用)
+```
+
+### �🔄 CI/CD パイプライン
 
 #### GitHub Actions ワークフロー
 ```yaml
@@ -575,7 +597,21 @@ on:
     branches: [ main ]
 
 jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: セキュリティスキャン
+      run: |
+        # サービスアカウントファイルが誤って含まれていないかチェック
+        if [ -f "firebase-service-account.json" ] || [ -f "strapi-backend/config/firebase-service-account.json" ]; then
+          echo "❌ Service account files found in repository!"
+          exit 1
+        fi
+        echo "✅ Security check passed"
+
   test:
+    needs: security-scan
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
