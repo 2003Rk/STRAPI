@@ -12,7 +12,7 @@ const serviceAccount = require('./strapi-backend/config/firebase-service-account
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://strapiintegration-e7a21-default-rtdb.firebaseio.com"
+    databaseURL: "https://myhome-27a27-default-rtdb.firebaseio.com"
   });
 }
 

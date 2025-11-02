@@ -22,7 +22,8 @@ export default function LearningPage({
   onNavigateToPropertyManagement,
   onNavigateToInputSupport,
   onNavigateToFAQ,
-  onNavigateToLogin
+  onNavigateToLogin,
+  onNavigateToChecklist
 }: { 
   onNavigateBack?: () => void; 
   onNavigateToUserManagement?: () => void;
@@ -32,6 +33,7 @@ export default function LearningPage({
   onNavigateToInputSupport?: () => void;
   onNavigateToFAQ?: () => void;
   onNavigateToLogin?: () => void;
+  onNavigateToChecklist?: () => void;
 }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [learningContent, setLearningContent] = useState<LearningContent[]>([]);
@@ -119,7 +121,7 @@ export default function LearningPage({
   };
   return (
     <div className="min-h-screen bg-green-50">
-      <Layout
+            <Layout
         currentView="apartmentSearch"
         onNavigateToHome={onNavigateToHome || onNavigateBack}
         onNavigateToUserManagement={onNavigateToUserManagement}
@@ -129,21 +131,28 @@ export default function LearningPage({
         onNavigateToInputSupport={onNavigateToInputSupport}
         onNavigateToFAQ={onNavigateToFAQ}
         onNavigateToLogin={onNavigateToLogin || onNavigateBack}
+        onNavigateToChecklist={onNavigateToChecklist}
       >
         <div className="min-h-screen bg-green-50">
         {/* Header */}
-        <div className="bg-green-50 px-6 py-4">
+        <div className="bg-green-50 px-4 sm:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="w-6 h-6 bg-green-400 rounded mr-3"></div>
-              <h1 className="text-xl font-medium text-gray-800">管理画面</h1>
+              <div className="w-20 h-12 sm:w-32 sm:h-20 rounded mr-3 overflow-hidden">
+                <img 
+                  src="/terasuE1.png" 
+                  alt="テラスエステート ロゴ" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <h1 className="text-lg sm:text-xl font-medium text-gray-800">管理画面</h1>
             </div>
             <button 
               onClick={handleLogout}
               className="flex items-center text-gray-700 hover:text-gray-900"
             >
-              <LogOut className="w-4 h-4 mr-2" />
-              ログアウト
+              <LogOut className="w-4 h-4 mr-1 sm:mr-2" />
+              <span className="text-sm sm:text-base">ログアウト</span>
             </button>
           </div>
         </div>
@@ -152,27 +161,27 @@ export default function LearningPage({
         <div className="h-5" />
 
         {/* Learning Content Section */}
-        <div className="mb-30">
+        <div className="mb-20 px-4 sm:px-6">
 
           {/* Loading State */}
           {loading ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-              <p className="mt-2 text-gray-600">Loading learning content from Firestore...</p>
+              <p className="mt-2 text-gray-600 text-sm sm:text-base">Loading learning content from Firestore...</p>
             </div>
           ) : (
             <>
               {/* Debug info removed */}
               
               {/* Content Grid */}
-              <div className="grid grid-cols-4 gap-6 mb-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 mb-8">
                 {contentToDisplay.map((card: LearningContent) => (
                   <div key={card.id} className="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                     <div className="relative">
                       <img
                         src={typeof card.image === 'string' ? card.image : sampleImg}
                         alt="Learning Content"
-                        className="w-full h-32 object-cover"
+                        className="w-full h-32 sm:h-32 object-cover"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = sampleImg;
                         }}
@@ -181,7 +190,7 @@ export default function LearningPage({
                         NEW
                       </div>
                     </div>
-                    <div className="p-4">
+                    <div className="p-3 sm:p-4">
                       <h3 className="text-sm font-medium text-gray-800 mb-2 line-clamp-2">
                         {card.title}
                       </h3>
@@ -197,7 +206,7 @@ export default function LearningPage({
           )}
 
           {/* Pagination */}
-          <div className="flex justify-center items-center space-x-2">
+          <div className="flex justify-center items-center space-x-1 sm:space-x-2 px-4">
             <button
               onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
               className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"
@@ -205,19 +214,21 @@ export default function LearningPage({
             >
               <ChevronLeft size={16} className={currentPage === 1 ? 'text-gray-400' : 'text-gray-600'} />
             </button>
-            {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                className={`w-8 h-8 rounded-full text-sm font-medium transition-colors ${
-                  page === currentPage
-                    ? 'bg-blue-500 text-white'
-                    : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
-                }`}
-              >
-                {page}
-              </button>
-            ))}
+            <div className="flex space-x-1 sm:space-x-2 overflow-x-auto max-w-xs sm:max-w-none">
+              {Array.from({ length: totalPages || 1 }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => setCurrentPage(page)}
+                  className={`w-8 h-8 rounded-full text-sm font-medium transition-colors flex-shrink-0 ${
+                    page === currentPage
+                      ? 'bg-blue-500 text-white'
+                      : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+            </div>
             <button
               onClick={() => setCurrentPage(Math.min(totalPages || 1, currentPage + 1))}
               className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition-colors"

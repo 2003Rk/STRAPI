@@ -1,0 +1,9 @@
+version: "2"
+authtoken: 320qNqKxMYZ1bDTHlbWfLxKlB2c_6TbsWFGXnpqD17LG8bAqC
+tunnels:
+  strapi:
+    addr: 1337
+    proto: http
+  webhook:
+    addr: 3002
+    proto: http

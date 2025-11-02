@@ -23,6 +23,7 @@ interface ConstructionFAQProps {
   onNavigateToInputSupport?: () => void;
   onNavigateToFAQ?: () => void;
   onNavigateToLogin?: () => void;
+  onNavigateToChecklist?: () => void;
 }
 
 const ConstructionFAQ = ({
@@ -33,7 +34,8 @@ const ConstructionFAQ = ({
   onNavigateToPropertyManagement,
   onNavigateToInputSupport,
   onNavigateToFAQ,
-  onNavigateToLogin
+  onNavigateToLogin,
+  onNavigateToChecklist
 }: {
   onNavigateBack?: () => void;
   onNavigateToUserManagement?: () => void;
@@ -43,6 +45,7 @@ const ConstructionFAQ = ({
   onNavigateToInputSupport?: () => void;
   onNavigateToFAQ?: () => void;
   onNavigateToLogin?: () => void;
+  onNavigateToChecklist?: () => void;
 }) => {
 
   const [selectedCategory, setSelectedCategory] = useState(1);
@@ -151,18 +154,25 @@ const ConstructionFAQ = ({
         onNavigateToInputSupport={onNavigateToInputSupport}
         onNavigateToFAQ={onNavigateToFAQ}
         onNavigateToLogin={onNavigateToLogin || onNavigateBack}
+        onNavigateToChecklist={onNavigateToChecklist}
       >
         <div className="min-h-screen bg-green-50">
-        {/* Header */}
-        <div className="bg-green-50 border-b border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
+       {/* Header */}
+        <div className="bg-green-50 px-3 sm:px-6 py-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center">
-              <div className="w-6 h-6 bg-green-400 rounded mr-3"></div>
-              <h1 className="text-xl font-medium text-gray-800">管理画面</h1>
+              <div className="w-20 h-12 sm:w-32 sm:h-20 rounded mr-3 overflow-hidden">
+                <img 
+                  src="/terasuE1.png" 
+                  alt="テラスエステート ロゴ" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <h1 className="text-lg sm:text-xl font-medium text-gray-800">管理画面</h1>
             </div>
             <button 
               onClick={handleLogout}
-              className="flex items-center text-gray-700 hover:text-gray-900"
+              className="flex items-center text-gray-700 hover:text-gray-900 text-sm sm:text-base"
             >
               <LogOut className="w-4 h-4 mr-2" />
               ログアウト
@@ -174,75 +184,75 @@ const ConstructionFAQ = ({
         <div className="h-6" />
 
         {/* Content */}
-        <main className="px-6 pb-8">
+        <main className="px-3 sm:px-6 pb-8">
           {/* Title Section */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6 sm:mb-8">
             <div className="flex items-center justify-center mb-4">
-              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg mr-2">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg mr-2">
                 Q
               </div>
-              <span className="text-2xl font-bold text-gray-800 mx-2">&</span>
-              <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-lg ml-2">
+              <span className="text-xl sm:text-2xl font-bold text-gray-800 mx-2">&</span>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-base sm:text-lg ml-2">
                 A
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-800 mb-2">新築戸建購入</h1>
-            <p className="text-xl text-gray-600">に関するFAQ</p>
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">新築戸建購入</h1>
+            <p className="text-lg sm:text-xl text-gray-600">に関するFAQ</p>
 
             {/* Character illustrations */}
-            <div className="flex justify-center items-center mt-6 space-x-2">
+            <div className="flex justify-center items-center mt-4 sm:mt-6 space-x-1 sm:space-x-2">
               <div className="relative">
-                <div className="w-12 h-12 bg-orange-100 rounded-full border-2 border-orange-200"></div>
-                <div className="w-8 h-8 bg-orange-200 rounded-full border border-orange-300 absolute -top-1 -right-1"></div>
-                <div className="w-6 h-6 bg-orange-300 rounded-full border border-orange-400 absolute -bottom-1 -left-1"></div>
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-100 rounded-full border-2 border-orange-200"></div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-200 rounded-full border border-orange-300 absolute -top-1 -right-1"></div>
+                <div className="w-4 h-4 sm:w-6 sm:h-6 bg-orange-300 rounded-full border border-orange-400 absolute -bottom-1 -left-1"></div>
               </div>
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center border-2 border-gray-200">
-                <div className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center">
-                  <span className="text-white text-lg">👨</span>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center border-2 border-gray-200">
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-gray-800 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm sm:text-lg">👨</span>
                 </div>
               </div>
-              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center border-2 border-gray-200">
-                <div className="w-12 h-12 bg-orange-400 rounded-full flex items-center justify-center">
-                  <span className="text-white text-lg">👩</span>
+              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white rounded-full flex items-center justify-center border-2 border-gray-200">
+                <div className="w-8 h-8 sm:w-12 sm:h-12 bg-orange-400 rounded-full flex items-center justify-center">
+                  <span className="text-white text-sm sm:text-lg">👩</span>
                 </div>
               </div>
               <div className="relative">
-                <div className="w-10 h-10 bg-orange-100 rounded-full border border-orange-200"></div>
-                <div className="w-14 h-14 bg-orange-200 rounded-full border-2 border-orange-300 absolute -top-2 -right-2"></div>
-                <div className="w-8 h-8 bg-orange-300 rounded-full border border-orange-400 absolute -bottom-1 -left-1"></div>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-orange-100 rounded-full border border-orange-200"></div>
+                <div className="w-10 h-10 sm:w-14 sm:h-14 bg-orange-200 rounded-full border-2 border-orange-300 absolute -top-2 -right-2"></div>
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-300 rounded-full border border-orange-400 absolute -bottom-1 -left-1"></div>
               </div>
             </div>
           </div>
 
           {/* Category Buttons */}
-          <div className="flex justify-center mb-8 space-x-2 flex-wrap">
+          <div className="flex justify-center mb-6 sm:mb-8 space-x-1 sm:space-x-2 flex-wrap px-2">
             <button
               onClick={() => setSelectedCategory(1)}
-              className={`px-4 py-2 rounded-full text-sm mb-2 whitespace-nowrap ${selectedCategory === 1 ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              className={`px-2 sm:px-4 py-2 rounded-full text-xs sm:text-sm mb-2 whitespace-nowrap ${selectedCategory === 1 ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
             >
               新築戸建購入に関するFAQ
             </button>
             <button
               onClick={() => setSelectedCategory(2)}
-              className={`px-4 py-2 rounded-full text-sm mb-2 whitespace-nowrap ${selectedCategory === 2 ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              className={`px-2 sm:px-4 py-2 rounded-full text-xs sm:text-sm mb-2 whitespace-nowrap ${selectedCategory === 2 ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
             >
               住宅ローンに関するFAQ
             </button>
             <button
               onClick={() => setSelectedCategory(3)}
-              className={`px-4 py-2 rounded-full text-sm mb-2 whitespace-nowrap ${selectedCategory === 3 ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              className={`px-2 sm:px-4 py-2 rounded-full text-xs sm:text-sm mb-2 whitespace-nowrap ${selectedCategory === 3 ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
             >
               諸費・手続きに関するFAQ
             </button>
             <button
               onClick={() => setSelectedCategory(4)}
-              className={`px-4 py-2 rounded-full text-sm mb-2 whitespace-nowrap ${selectedCategory === 4 ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              className={`px-2 sm:px-4 py-2 rounded-full text-xs sm:text-sm mb-2 whitespace-nowrap ${selectedCategory === 4 ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
             >
               アフターサポートに関するFAQ
             </button>
             <button
               onClick={() => setSelectedCategory(5)}
-              className={`px-4 py-2 rounded-full text-sm mb-2 whitespace-nowrap ${selectedCategory === 5 ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+              className={`px-2 sm:px-4 py-2 rounded-full text-xs sm:text-sm mb-2 whitespace-nowrap ${selectedCategory === 5 ? 'bg-gray-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
             >
               テラスエステートの特徴に関するFAQ
             </button>
@@ -252,22 +262,22 @@ const ConstructionFAQ = ({
           {loading ? (
             <div className="text-center py-12">
               <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
-              <p className="mt-2 text-gray-600">Loading FAQs from Firestore...</p>
+              <p className="mt-2 text-gray-600 text-sm sm:text-base">Loading FAQs from Firestore...</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
               {/* Default FAQ Cards */}
-              <div className="bg-orange-50 rounded-lg p-6 border border-orange-100 hover:shadow-md transition-shadow">
+              <div className="bg-orange-50 rounded-lg p-4 sm:p-6 border border-orange-100 hover:shadow-md transition-shadow">
                 <div className="flex items-start mb-4">
-                  <div className="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0 text-sm">
+                  <div className="bg-orange-500 text-white w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0 text-xs sm:text-sm">
                     A.
                   </div>
-                  <h3 className="font-bold text-gray-800 text-base leading-tight">
+                  <h3 className="font-bold text-gray-800 text-sm sm:text-base leading-tight">
                     新築戸建はいつ買うのが一番良いですか？
                   </h3>
                 </div>
                 <div className="border-t-2 border-dashed border-orange-300 pt-4">
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
                     「安い時期」は物件ごとに異なります。
                     当社はビルダーの販売戦略を把握しており、
                     損をしない買い時を正確にご提案できます。
@@ -276,17 +286,17 @@ const ConstructionFAQ = ({
                 </div>
               </div>
 
-              <div className="bg-orange-50 rounded-lg p-6 border border-orange-100 hover:shadow-md transition-shadow">
+              <div className="bg-orange-50 rounded-lg p-4 sm:p-6 border border-orange-100 hover:shadow-md transition-shadow">
                 <div className="flex items-start mb-4">
-                  <div className="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0 text-sm">
+                  <div className="bg-orange-500 text-white w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0 text-xs sm:text-sm">
                     A.
                   </div>
-                  <h3 className="font-bold text-gray-800 text-base leading-tight">
+                  <h3 className="font-bold text-gray-800 text-sm sm:text-base leading-tight">
                     内覧はすぐできますか？急いで決めてくなりのですが...
                   </h3>
                 </div>
                 <div className="border-t-2 border-dashed border-orange-300 pt-4">
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
                     もちろん、無理にご判断いただくことはありません。
                     まずはお気軽にご相談ください。
                     しっかり営業は一切りますんので安心ください。
@@ -294,17 +304,17 @@ const ConstructionFAQ = ({
                 </div>
               </div>
 
-              <div className="bg-orange-50 rounded-lg p-6 border border-orange-100 hover:shadow-md transition-shadow">
+              <div className="bg-orange-50 rounded-lg p-4 sm:p-6 border border-orange-100 hover:shadow-md transition-shadow">
                 <div className="flex items-start mb-4">
-                  <div className="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0 text-sm">
+                  <div className="bg-orange-500 text-white w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0 text-xs sm:text-sm">
                     A.
                   </div>
-                  <h3 className="font-bold text-gray-800 text-base leading-tight">
+                  <h3 className="font-bold text-gray-800 text-sm sm:text-base leading-tight">
                     新築と中古、正直どちらが得ですか？
                   </h3>
                 </div>
                 <div className="border-t-2 border-dashed border-orange-300 pt-4">
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
                     将来の継続費や修繕、税制優遇を考えると
                     新築の方が安心で経済的に得なケースが多いです。
                     その理由も丁寧にご説明します。
@@ -312,17 +322,17 @@ const ConstructionFAQ = ({
                 </div>
               </div>
 
-              <div className="bg-orange-50 rounded-lg p-6 border border-orange-100 hover:shadow-md transition-shadow">
+              <div className="bg-orange-50 rounded-lg p-4 sm:p-6 border border-orange-100 hover:shadow-md transition-shadow">
                 <div className="flex items-start mb-4">
-                  <div className="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0 text-sm">
+                  <div className="bg-orange-500 text-white w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0 text-xs sm:text-sm">
                     A.
                   </div>
-                  <h3 className="font-bold text-gray-800 text-base leading-tight">
+                  <h3 className="font-bold text-gray-800 text-sm sm:text-base leading-tight">
                     購入から引き渡しまでどれくらいかかりますか？
                   </h3>
                 </div>
                 <div className="border-t-2 border-dashed border-orange-300 pt-4">
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-gray-700 leading-relaxed">
                     目安は1.5〜3ヶ月です。スケジュールは
                     ご希望に合わせて柔軟に対応しますので
                     ご相談ください。
@@ -332,17 +342,17 @@ const ConstructionFAQ = ({
 
               {/* Dynamic FAQs from Firestore */}
               {getFilteredFaqs().map((faq: FAQ, index: number) => (
-                <div key={faq.id || index} className="bg-orange-50 rounded-lg p-6 border border-orange-100 hover:shadow-md transition-shadow">
+                <div key={faq.id || index} className="bg-orange-50 rounded-lg p-4 sm:p-6 border border-orange-100 hover:shadow-md transition-shadow">
                   <div className="flex items-start mb-4">
-                    <div className="bg-orange-500 text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0 text-sm">
+                    <div className="bg-orange-500 text-white w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold mr-3 flex-shrink-0 text-xs sm:text-sm">
                       A.
                     </div>
-                    <h3 className="font-bold text-gray-800 text-base leading-tight">
+                    <h3 className="font-bold text-gray-800 text-sm sm:text-base leading-tight">
                       {faq.question}
                     </h3>
                   </div>
                   <div className="border-t-2 border-dashed border-orange-300 pt-4">
-                    <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+                    <p className="text-xs sm:text-sm text-gray-700 leading-relaxed whitespace-pre-line">
                       {faq.answer}
                     </p>
                     {faq.category && (

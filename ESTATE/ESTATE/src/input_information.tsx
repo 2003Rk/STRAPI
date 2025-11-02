@@ -1,8 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Layout from './components/Layout';
 import { LogOut } from 'lucide-react';
 
 const RealEstateUI = (props: any) => {
+    // State for form data
+    const [formData, setFormData] = useState({
+        propertyType: 'マンション（新築）',
+        area: '福岡県',
+        nearestStation: '福岡県',
+        budget: '4000万円',
+        loanRequest: 'あり',
+        layout: '5LDK',
+        remarks: ''
+    });
+
+    const handleInputChange = (field: string, value: string) => {
+        console.log(`Changing ${field} to:`, value); // Debug log
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+        console.log('Updated formData:', { ...formData, [field]: value }); // Debug log
+    };
+
     const handleLogout = () => {
         if (props.onNavigateToLogin) {
             props.onNavigateToLogin();
@@ -21,15 +41,22 @@ const RealEstateUI = (props: any) => {
                 onNavigateToInputSupport={props.onNavigateToInputSupport}
                 onNavigateToFAQ={props.onNavigateToFAQ}
                 onNavigateToLogin={props.onNavigateToLogin}
+                onNavigateToChecklist={props.onNavigateToChecklist}
             >
                 <div className="min-h-screen bg-green-50">
-                {/* Header */}
-                <div className="bg-green-50 px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                            <div className="w-6 h-6 bg-green-400 rounded mr-3"></div>
-                            <h1 className="text-xl font-medium text-gray-800">管理画面</h1>
-                        </div>
+      {/* Header */}
+        <div className="bg-green-50 px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="w-32 h-20 rounded mr-3 overflow-hidden">
+                <img 
+                  src="/terasuE1.png" 
+                  alt="テラスエステート ロゴ" 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <h1 className="text-xl font-medium text-gray-800">管理画面</h1>
+            </div>
                         <button 
                             onClick={handleLogout}
                             className="flex items-center text-gray-700 hover:text-gray-900"
@@ -68,46 +95,122 @@ const RealEstateUI = (props: any) => {
                         <div className="space-y-6">
                             <div className="flex items-center">
                                 <label className="w-32 text-base font-medium text-gray-700">種別</label>
-                                <div className="flex-1 px-4 py-3 bg-gray-100 border border-gray-300 rounded-md text-base">
-                                    マンション（新築）
-                                </div>
+                                <select 
+                                    value={formData.propertyType}
+                                    onChange={(e) => handleInputChange('propertyType', e.target.value)}
+                                    className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer"
+                                    disabled={false}
+                                >
+                                    <option value="マンション（新築）">マンション（新築）</option>
+                                    <option value="マンション（中古）">マンション（中古）</option>
+                                    <option value="一戸建て（新築）">一戸建て（新築）</option>
+                                    <option value="一戸建て（中古）">一戸建て（中古）</option>
+                                </select>
                             </div>
                             <div className="flex items-center">
                                 <label className="w-32 text-base font-medium text-gray-700">希望エリア</label>
-                                <div className="flex-1 px-4 py-3 bg-gray-100 border border-gray-300 rounded-md text-base">
-                                    福岡県
-                                </div>
+                                <input 
+                                    type="text"
+                                    value={formData.area}
+                                    onChange={(e) => handleInputChange('area', e.target.value)}
+                                    className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-text"
+                                    placeholder="希望するエリアを入力してください"
+                                    readOnly={false}
+                                    disabled={false}
+                                />
                             </div>
                             <div className="flex items-center">
                                 <label className="w-32 text-base font-medium text-gray-700">最寄駅</label>
-                                <div className="flex-1 px-4 py-3 bg-gray-100 border border-gray-300 rounded-md text-base">
-                                    福岡県
-                                </div>
+                                <input 
+                                    type="text"
+                                    value={formData.nearestStation}
+                                    onChange={(e) => handleInputChange('nearestStation', e.target.value)}
+                                    className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-text"
+                                    placeholder="最寄駅を入力してください"
+                                    readOnly={false}
+                                    disabled={false}
+                                />
                             </div>
                             <div className="flex items-center">
                                 <label className="w-32 text-base font-medium text-gray-700">希望金額</label>
-                                <div className="flex-1 px-4 py-3 bg-gray-100 border border-gray-300 rounded-md text-base">
-                                    4000万円
-                                </div>
+                                <input 
+                                    type="text"
+                                    value={formData.budget}
+                                    onChange={(e) => handleInputChange('budget', e.target.value)}
+                                    className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-text"
+                                    placeholder="希望予算を入力してください（例：4000万円）"
+                                    readOnly={false}
+                                    disabled={false}
+                                />
                             </div>
                             <div className="flex items-center">
                                 <label className="w-32 text-base font-medium text-gray-700">ローン希望</label>
-                                <div className="flex-1 px-4 py-3 bg-gray-100 border border-gray-300 rounded-md text-base">
-                                    あり
-                                </div>
+                                <select 
+                                    value={formData.loanRequest}
+                                    onChange={(e) => handleInputChange('loanRequest', e.target.value)}
+                                    className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer"
+                                    disabled={false}
+                                >
+                                    <option value="あり">あり</option>
+                                    <option value="なし">なし</option>
+                                    <option value="検討中">検討中</option>
+                                </select>
                             </div>
                             <div className="flex items-center">
                                 <label className="w-32 text-base font-medium text-gray-700">間取り</label>
-                                <div className="flex-1 px-4 py-3 bg-gray-100 border border-gray-300 rounded-md text-base">
-                                    5LDK
-                                </div>
+                                <select 
+                                    value={formData.layout}
+                                    onChange={(e) => handleInputChange('layout', e.target.value)}
+                                    className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer"
+                                    disabled={false}
+                                >
+                                    <option value="1K">1K</option>
+                                    <option value="1DK">1DK</option>
+                                    <option value="1LDK">1LDK</option>
+                                    <option value="2K">2K</option>
+                                    <option value="2DK">2DK</option>
+                                    <option value="2LDK">2LDK</option>
+                                    <option value="3K">3K</option>
+                                    <option value="3DK">3DK</option>
+                                    <option value="3LDK">3LDK</option>
+                                    <option value="4LDK">4LDK</option>
+                                    <option value="5LDK">5LDK</option>
+                                </select>
                             </div>
-                            <div className="flex items-center">
-                                <label className="w-32 text-base font-medium text-gray-700">備考</label>
-                                <div className="flex-1 px-4 py-3 bg-gray-100 border border-gray-300 rounded-md text-base">
-                                    
-                                </div>
+                            <div className="flex items-start">
+                                <label className="w-32 text-base font-medium text-gray-700 pt-3">備考</label>
+                                <textarea 
+                                    value={formData.remarks}
+                                    onChange={(e) => handleInputChange('remarks', e.target.value)}
+                                    className="flex-1 px-4 py-3 bg-white border border-gray-300 rounded-md text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 min-h-[100px] resize-vertical cursor-text"
+                                    placeholder="その他のご要望があればご記入ください"
+                                    readOnly={false}
+                                    disabled={false}
+                                />
                             </div>
+                        </div>
+
+                        {/* Save Button */}
+                        <div className="mt-8 text-center space-x-4">
+                            <button 
+                                onClick={() => {
+                                    console.log('Current form data:', formData);
+                                    alert(`登録情報を保存しました！\n\n${JSON.stringify(formData, null, 2)}`);
+                                }}
+                                className="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg text-base transition-colors duration-200"
+                            >
+                                保存する
+                            </button>
+                            <button 
+                                onClick={() => {
+                                    console.log('Testing form interaction...');
+                                    console.log('Current form data:', formData);
+                                    alert('フォームテスト実行中\nコンソールをチェックしてください');
+                                }}
+                                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-lg text-base transition-colors duration-200"
+                            >
+                                テスト
+                            </button>
                         </div>
                     </div>
 

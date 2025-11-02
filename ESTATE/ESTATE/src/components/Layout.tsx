@@ -13,6 +13,7 @@ interface LayoutProps {
   onNavigateToApartmentSearch?: () => void;
   onNavigateToPropertyManagement?: () => void;
   onNavigateToInputSupport?: () => void;
+  onNavigateToChecklist?: () => void;
 }
 
 export default function Layout({
@@ -25,7 +26,8 @@ export default function Layout({
   onNavigateToLogin,
   onNavigateToApartmentSearch,
   onNavigateToPropertyManagement,
-  onNavigateToInputSupport
+  onNavigateToInputSupport,
+  onNavigateToChecklist
 }: LayoutProps) {
   return (
     <div className="flex min-h-screen bg-green-50">
@@ -40,6 +42,7 @@ export default function Layout({
         onNavigateToApartmentSearch={onNavigateToApartmentSearch}
         onNavigateToPropertyManagement={onNavigateToPropertyManagement}
         onNavigateToInputSupport={onNavigateToInputSupport}
+        onNavigateToChecklist={onNavigateToChecklist}
       />
 
       {/* Main content */}

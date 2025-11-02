@@ -14,12 +14,17 @@
     "node": ">=18.0.0",
     "npm": ">=6.0.0"
   },
-  "keywords": ["strapi", "railway", "webhook"],
+  "keywords": [
+    "strapi",
+    "railway",
+    "webhook"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "express": "^5.1.0",
     "firebase": "^12.1.0",
-    "firebase-admin": "^13.4.0"
+    "firebase-admin": "^13.4.0",
+    "http-proxy-middleware": "^3.0.5"
   }
 }

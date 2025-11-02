@@ -410,6 +410,66 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiChecklistItemChecklistItem
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'checklist_items';
+  info: {
+    description: 'Checklist items that users can complete to earn points';
+    displayName: 'Checklist Item';
+    pluralName: 'checklist-items';
+    singularName: 'checklist-item';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    category: Schema.Attribute.Enumeration<
+      [
+        'information_gathering',
+        'property_viewing',
+        'property_research',
+        'contract_process',
+        'handover_process',
+      ]
+    > &
+      Schema.Attribute.DefaultTo<'information_gathering'>;
+    completedAt: Schema.Attribute.DateTime;
+    completedBy: Schema.Attribute.String;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    description: Schema.Attribute.Text;
+    isActive: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    isCompleted: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    itemId: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.Unique;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::checklist-item.checklist-item'
+    > &
+      Schema.Attribute.Private;
+    phase: Schema.Attribute.String;
+    points: Schema.Attribute.Integer &
+      Schema.Attribute.SetMinMax<
+        {
+          min: 0;
+        },
+        number
+      > &
+      Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    rewardAmount: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<1000>;
+    rewardThreshold: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<5>;
+    sortOrder: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    title: Schema.Attribute.String & Schema.Attribute.Required;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiLearningContentLearningContent
   extends Struct.CollectionTypeSchema {
   collectionName: 'learning_contents';
@@ -990,6 +1050,7 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::checklist-item.checklist-item': ApiChecklistItemChecklistItem;
       'api::learning-content.learning-content': ApiLearningContentLearningContent;
       'api::post.post': ApiPostPost;
       'plugin::content-releases.release': PluginContentReleasesRelease;

@@ -3,7 +3,7 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
-// Your web app's Firebase configuration (using same project as the existing setup)
+// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDpqNvMPWW-KFqw6b_DhQVAoQqvvxsTew0",
   authDomain: "strapi-9ab33.firebaseapp.com",

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation } from 'react-router-dom';
-import { User, LogOut, Search, Eye, Home, Users, FileText, MessageSquare, PencilRuler, Mail, Heart } from 'lucide-react';
-import { collection, query, where, getDocs } from 'firebase/firestore';
+import { User, LogOut, Search, Eye, EyeOff, Home, Users, FileText, MessageSquare, PencilRuler, Mail, Heart } from 'lucide-react';
+import { collection, query, where, getDocs, addDoc } from 'firebase/firestore';
 import { db } from './src/firebase';
 import HomeDashboard from './home';
 import LearningPage from './4';
@@ -12,6 +12,7 @@ import AdminPanelPage from './src/admin_side/1page';
 import PropertyListing from './src/learning_content';
 import RealEstateUI from './src/input_information';
 import StatusDetailsPage from './75_page';
+import EnhancedChecklistPage from './src/admin_side/EnhancedChecklistPage';
 
 const EstateDashboard = () => {
   const navigate = useNavigate();
@@ -23,6 +24,7 @@ const EstateDashboard = () => {
   const [loginError, setLoginError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Get current view from the URL path
   const getCurrentView = () => {
@@ -81,7 +83,7 @@ const EstateDashboard = () => {
           // User is authenticated, allow navigation to any protected route
         } else {
           // No saved session, redirect to login ONLY if on protected routes
-          const protectedRoutes = ['/dashboard', '/admin-panel', '/admin-side', '/user-management', '/apartment-search', '/property-management', '/input-support', '/faq', '/status-details'];
+          const protectedRoutes = ['/dashboard', '/admin-panel', '/admin-side', '/user-management', '/apartment-search', '/property-management', '/input-support', '/faq', '/status-details', '/checklist'];
           const isOnProtectedRoute = protectedRoutes.includes(location.pathname);
           
           if (isOnProtectedRoute) {
@@ -119,6 +121,11 @@ const EstateDashboard = () => {
     navigate('/dashboard');
   };
 
+  const navigateToChecklist = () => {
+    console.log('Navigating to checklist');
+    navigate('/checklist');
+  };
+
   // Logout function
   const handleLogout = () => {
     console.log('Logging out user');
@@ -133,7 +140,7 @@ const EstateDashboard = () => {
 
   // Login handler with Firestore database authentication
   const handleLogin = async () => {
-    console.log('Attempting login with:', loginData.loginId);
+    console.log('🚀 Starting login attempt with:', loginData.loginId);
     
     // Clear previous errors
     setLoginError('');
@@ -162,16 +169,26 @@ const EstateDashboard = () => {
       const enteredLoginId = loginData.loginId.trim();
       const enteredPassword = loginData.password.trim();
       
+      console.log('🔍 Querying Firestore for user:', enteredLoginId);
+      console.log('🔥 Firebase project ID: strapi-9ab33');
+      console.log('🔥 Database reference:', db);
+      
       // Query Firestore for the user by loginId
       const usersRef = collection(db, 'users');
+      console.log('🔥 Users collection reference created');
+      
       const userQuery = query(
         usersRef, 
         where('loginId', '==', enteredLoginId)
       );
+      console.log('🔥 Query created for loginId:', enteredLoginId);
       
+      console.log('🔥 Executing Firestore query...');
       const querySnapshot = await getDocs(userQuery);
+      console.log('📊 Query result - empty:', querySnapshot.empty, 'size:', querySnapshot.size);
       
       if (querySnapshot.empty) {
+        console.log('❌ User not found by loginId, trying email...');
         // Try querying by email if loginId doesn't work
         const emailQuery = query(
           usersRef, 
@@ -180,7 +197,8 @@ const EstateDashboard = () => {
         const emailSnapshot = await getDocs(emailQuery);
         
         if (emailSnapshot.empty) {
-          setLoginError('User not found. Please check your Login ID or email.');
+          console.log('❌ User not found by email either');
+          setLoginError('User not found. Please create a test user first or check your credentials.');
           setIsLoading(false);
           return;
         }
@@ -188,16 +206,17 @@ const EstateDashboard = () => {
         // Process email query result
         const userDoc = emailSnapshot.docs[0];
         const userData = userDoc.data();
+        console.log('✅ User found by email:', userData.name);
         
         // Verify password
         if (userData.password !== enteredPassword) {
+          console.log('❌ Password verification failed');
           setLoginError('Incorrect password. Please try again.');
           setIsLoading(false);
           return;
         }
         
-        // Check user role and navigate
-        console.log('Login successful for user:', userData.name, '- Role:', userData.role);
+        console.log('✅ Password verified, logging in user:', userData.name, '- Role:', userData.role);
         
         // Save user data to localStorage for persistence
         setCurrentUser(userData);
@@ -205,51 +224,101 @@ const EstateDashboard = () => {
         
         if (userData.role === 'admin') {
           console.log('🔥 Admin user detected, navigating to admin side page');
-          console.log('🔥 User data:', JSON.stringify(userData, null, 2));
-          console.log('🔥 About to navigate to /admin-side');
-          navigate('/admin-side'); // Navigate to admin_side/1page.tsx for admin users
+          navigate('/admin-side', { replace: true });
           console.log('🔥 Navigation to /admin-side completed');
         } else {
-          console.log('👤 Regular user, navigating to admin panel component');
-          console.log('👤 User role:', userData.role);
-          navigate('/admin-panel'); // Navigate to AdminPanel component for regular users
+          console.log('👤 Regular user, navigating to dashboard');
+          navigate('/dashboard', { replace: true });
         }
         
       } else {
         // Process loginId query result
         const userDoc = querySnapshot.docs[0];
         const userData = userDoc.data();
+        console.log('✅ User found by loginId:', userData.name);
         
         // Verify password
         if (userData.password !== enteredPassword) {
+          console.log('❌ Password verification failed');
           setLoginError('Incorrect password. Please try again.');
           setIsLoading(false);
           return;
         }
         
-        // Check user role and navigate
-        console.log('Login successful for user:', userData.name, '- Role:', userData.role);
+        console.log('✅ Password verified, logging in user:', userData.name, '- Role:', userData.role);
         
         // Save user data to localStorage for persistence
         setCurrentUser(userData);
         localStorage.setItem('estateUser', JSON.stringify(userData));
         
         if (userData.role === 'admin') {
-          console.log('🔥 Admin user detected (loginId), navigating to admin side page');
-          console.log('🔥 User data:', JSON.stringify(userData, null, 2));
-          console.log('🔥 About to navigate to /admin-side');
-          navigate('/admin-side'); // Navigate to admin_side/1page.tsx for admin users
+          console.log('🔥 Admin user detected, navigating to admin side page');
+          navigate('/admin-side', { replace: true });
           console.log('🔥 Navigation to /admin-side completed');
         } else {
-          console.log('👤 Regular user (loginId), navigating to admin panel component');
-          console.log('👤 User role:', userData.role);
-          navigate('/admin-panel'); // Navigate to AdminPanel component for regular users
+          console.log('👤 Regular user, navigating to dashboard');
+          navigate('/dashboard', { replace: true });
         }
       }
       
     } catch (error: any) {
-      console.error('Database login error:', error.message);
-      setLoginError('Login failed. Please check your connection and try again.');
+      console.error('❌ Database login error:', error.message);
+      console.error('❌ Full error:', error);
+      console.error('❌ Error code:', error.code);
+      console.error('❌ Error stack:', error.stack);
+      
+      if (error.code === 'permission-denied') {
+        setLoginError('Firebase permission denied. Please check project configuration.');
+      } else if (error.code === 'unavailable') {
+        setLoginError('Firebase service unavailable. Please try again later.');
+      } else if (error.message.includes('project')) {
+        setLoginError('Firebase project configuration error. Please check project ID.');
+      } else {
+        setLoginError(`Login failed: ${error.message}`);
+      }
+    } finally {
+      console.log('🏁 Login process completed, setting loading to false');
+      setIsLoading(false);
+    }
+  };
+
+  // Function to create a test user (for development)
+  const createTestUser = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Create regular user
+      const regularUser = {
+        name: 'Test User',
+        email: 'test@example.com',
+        loginId: 'test',
+        password: 'test123',
+        role: 'user',
+        createdAt: new Date()
+      };
+      
+      // Create admin user
+      const adminUser = {
+        name: 'Admin User',
+        email: 'admin@example.com',
+        loginId: 'admin',
+        password: 'admin123',
+        role: 'admin',
+        createdAt: new Date()
+      };
+      
+      const usersRef = collection(db, 'users');
+      await addDoc(usersRef, regularUser);
+      await addDoc(usersRef, adminUser);
+      
+      console.log('✅ Test users created successfully!');
+      console.log('📝 Regular user - LoginID: test, Password: test123 (goes to /dashboard)');
+      console.log('👑 Admin user - LoginID: admin, Password: admin123 (goes to /admin-side)');
+      
+      setLoginError('Test users created!\n\nRegular User: test / test123 (→ Dashboard)\nAdmin User: admin / admin123 (→ Admin Panel)');
+    } catch (error: any) {
+      console.error('Error creating test users:', error);
+      setLoginError('Failed to create test users: ' + error.message);
     } finally {
       setIsLoading(false);
     }
@@ -257,7 +326,7 @@ const EstateDashboard = () => {
 
   // Login Screen JSX (moved directly to avoid re-renders)
   const renderLoginScreen = () => (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left side - White background with diagonal grey shadows */}
       <div className="flex-1 bg-white relative overflow-hidden">
         {/* Diagonal grey shadow pattern */}
@@ -275,22 +344,26 @@ const EstateDashboard = () => {
           )`
         }}></div>
 
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-gray-800">
+        <div className="relative z-10 flex flex-col items-center justify-center h-full text-gray-800 py-8 lg:py-0">
           <div className="mb-4">
-            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-4 shadow-lg">
-              <div className="text-white font-bold text-xl">A</div>
+            <div className="w-40 h-40 sm:w-60 sm:h-60 lg:w-80 lg:h-80 rounded-full overflow-hidden shadow-lg bg-white p-2">
+              <img 
+                src="/terasuE1.png" 
+                alt="テラスエステート ロゴ" 
+                className="w-full h-full object-contain rounded-full"
+              />
             </div>
           </div>
-          <h1 className="text-xl font-light tracking-wide text-gray-700">テラスエステート</h1>
+          <h1 className="text-lg sm:text-xl font-light tracking-wide text-gray-700">テラスエステート</h1>
         </div>
       </div>
 
       {/* Right side - Login form */}
-      <div className="flex-1 bg-white flex items-center justify-center">
-        <div className="w-full max-w-md px-8">
-          <h2 className="text-2xl font-light text-gray-800 mb-12 text-center">ログイン</h2>
+      <div className="flex-1 bg-white flex items-center justify-center px-4 py-8">
+        <div className="w-full max-w-md px-4 sm:px-8">
+          <h2 className="text-xl sm:text-2xl font-light text-gray-800 mb-8 sm:mb-12 text-center">ログイン</h2>
 
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <div>
               <input
                 type="text"
@@ -300,49 +373,52 @@ const EstateDashboard = () => {
                   setLoginData({ ...loginData, loginId: e.target.value });
                   if (loginError) setLoginError(''); // Clear error when user starts typing
                 }}
-                className="w-full px-4 py-3 border-l-4 border-yellow-400 bg-white rounded-r focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-l-4 border-yellow-400 bg-white rounded-r focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
             </div>
 
-            <div>
+            <div className="relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="パスワード"
                 value={loginData.password}
                 onChange={(e) => {
                   setLoginData({ ...loginData, password: e.target.value });
                   if (loginError) setLoginError(''); // Clear error when user starts typing
                 }}
-                className="w-full px-4 py-3 border-l-4 border-yellow-400 bg-white rounded-r focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                className="w-full px-3 sm:px-4 py-2 sm:py-3 pr-10 sm:pr-12 text-sm sm:text-base border-l-4 border-yellow-400 bg-white rounded-r focus:outline-none focus:ring-2 focus:ring-yellow-400"
               />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                {showPassword ? (
+                  <EyeOff size={18} className="sm:w-5 sm:h-5" />
+                ) : (
+                  <Eye size={18} className="sm:w-5 sm:h-5" />
+                )}
+              </button>
             </div>
 
-            <div className="text-sm text-gray-600 flex items-center">
+            <div className="text-xs sm:text-sm text-gray-600 flex items-center">
               <input type="checkbox" className="mr-2" />
               パスワードを忘れましたか？
             </div>
 
             {/* Error message display */}
             {loginError && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+              <div className="bg-red-50 border border-red-200 text-red-700 px-3 sm:px-4 py-2 sm:py-3 rounded-md text-xs sm:text-sm">
                 {loginError}
               </div>
             )}
 
-            {/* Database info */}
-            <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-md text-sm">
-              <div className="font-medium mb-2">データベース認証:</div>
-              <div className="text-xs">
-                Firebase Firestoreユーザーデータベースを使用しています。<br/>
-                既存のユーザー名/メールアドレスとパスワードを入力してください。
-              </div>
-            </div>
-
+            
             <button
               type="button"
               onClick={handleLogin}
               disabled={isLoading}
-              className={`w-full py-3 rounded-full font-medium transition duration-200 ${
+              className={`w-full py-2 sm:py-3 text-sm sm:text-base rounded-full font-medium transition duration-200 ${
                 isLoading 
                   ? 'bg-gray-400 text-gray-600 cursor-not-allowed' 
                   : 'bg-yellow-400 text-black hover:bg-yellow-500'
@@ -350,6 +426,8 @@ const EstateDashboard = () => {
             >
               {isLoading ? 'サインイン中...' : 'サインイン'}
             </button>
+
+          
           </div>
         </div>
       </div>
@@ -406,86 +484,107 @@ const EstateDashboard = () => {
     console.log('🔥 AdminPanel component rendering, currentView:', currentView, 'pathname:', location.pathname);
     return (
     <div className="min-h-screen bg-green-50">
-      <div className="flex">
-        <Sidebar
-          currentView={currentView}
-          onNavigateToHome={navigateToHome}
-          onNavigateToUserManagement={navigateToUserManagement}
-          onNavigateToApartmentSearch={navigateToApartmentSearch}
-          onNavigateToPropertyManagement={navigateToPropertyManagement}
-          onNavigateToInputSupport={navigateToInputSupport}
-          onNavigateToFAQ={navigateToFAQ}
-          onNavigateToLogin={handleLogout}
-        />
+      <div className="flex flex-col lg:flex-row">
+        <div className="lg:hidden">
+          <Sidebar
+            currentView={currentView}
+            onNavigateToHome={navigateToHome}
+            onNavigateToUserManagement={navigateToUserManagement}
+            onNavigateToApartmentSearch={navigateToApartmentSearch}
+            onNavigateToPropertyManagement={navigateToPropertyManagement}
+            onNavigateToInputSupport={navigateToInputSupport}
+            onNavigateToFAQ={navigateToFAQ}
+            onNavigateToLogin={handleLogout}
+          />
+        </div>
+        <div className="hidden lg:block">
+          <Sidebar
+            currentView={currentView}
+            onNavigateToHome={navigateToHome}
+            onNavigateToUserManagement={navigateToUserManagement}
+            onNavigateToApartmentSearch={navigateToApartmentSearch}
+            onNavigateToPropertyManagement={navigateToPropertyManagement}
+            onNavigateToInputSupport={navigateToInputSupport}
+            onNavigateToFAQ={navigateToFAQ}
+            onNavigateToLogin={handleLogout}
+          />
+        </div>
         {/* Main content */}
         <div className="flex-1 flex flex-col">
-          {/* Header - only in main content area */}
-          <div className="bg-green-50 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <div className="w-6 h-6 bg-green-500 rounded mr-3"></div>
-                <h1 className="text-xl font-medium text-gray-800">管理画面</h1>
+         {/* Header */}
+        <div className="bg-green-50 px-4 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <div className="w-20 h-12 sm:w-32 sm:h-20 rounded mr-2 sm:mr-3 overflow-hidden">
+                <img 
+                  src="/terasuE1.png" 
+                  alt="テラスエステート ロゴ" 
+                  className="w-full h-full object-contain"
+                />
               </div>
+              <h1 className="text-lg sm:text-xl font-medium text-gray-800">管理画面</h1>
+            </div>
               <button 
                 onClick={handleLogout}
-                className="flex items-center text-gray-600 hover:text-gray-800"
+                className="flex items-center text-gray-600 hover:text-gray-800 text-sm sm:text-base"
               >
-                <LogOut className="w-4 h-4 mr-2" />
-                ログアウト
+                <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                <span className="hidden sm:inline">ログアウト</span>
               </button>
             </div>
           </div>
           {/* Upper half - Green background with stats */}
-          <div className="bg-green-50 p-6">
+          <div className="bg-green-50 p-3 sm:p-6">
             {/* Stats grid */}
-            <div className="grid grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
             {/* Progress circle */}
-            <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl p-8 h-80 transition-all duration-300 hover:scale-105 cursor-pointer transform">
+            <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl p-4 sm:p-8 h-60 sm:h-80 transition-all duration-300 hover:scale-105 cursor-pointer transform">
               {/* Header */}
-              <div className="flex items-center gap-2 mb-6">
-                <Heart className="w-6 h-6 text-green-500 fill-green-500" />
-                <h2 className="text-lg font-bold text-gray-800">進捗状況</h2>
+              <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                <Heart className="w-4 h-4 sm:w-6 sm:h-6 text-green-500 fill-green-500" />
+                <h2 className="text-sm sm:text-lg font-bold text-gray-800">進捗状況</h2>
               </div>
 
               {/* Progress Circle */}
-              <div className="flex justify-center mb-6">
-                <div className="relative">
+              <div className="flex justify-center mb-4 sm:mb-6">
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40">
                   <svg 
-                    width="120" 
-                    height="120" 
-                    className="transform -rotate-90"
+                    width="128" 
+                    height="128" 
+                    className="sm:w-40 sm:h-40 transform -rotate-90"
+                    viewBox="0 0 128 128"
                   >
                     {/* Background circle */}
                     <circle
-                      cx="60"
-                      cy="60"
-                      r="50"
+                      cx="64"
+                      cy="64"
+                      r="56"
                       stroke="#e5e7eb"
                       strokeWidth="6"
                       fill="none"
                     />
                     {/* Progress circle */}
                     <circle
-                      cx="60"
-                      cy="60"
-                      r="50"
+                      cx="64"
+                      cy="64"
+                      r="56"
                       stroke="#22c55e"
                       strokeWidth="6"
                       fill="none"
                       strokeLinecap="round"
-                      strokeDasharray={2 * Math.PI * 50}
-                      strokeDashoffset={2 * Math.PI * 50 * (1 - 75 / 100)}
+                      strokeDasharray={2 * Math.PI * 56}
+                      strokeDashoffset={2 * Math.PI * 56 * (1 - 75 / 100)}
                       className="transition-all duration-1000 ease-in-out"
                     />
                   </svg>
                   
                   {/* Center content */}
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <div className="text-3xl font-bold text-black">
+                    <div className="text-3xl sm:text-4xl font-bold text-black text-center">
                       75
-                      <span className="text-lg ml-1">%</span>
+                      <span className="text-lg sm:text-xl ml-1">%</span>
                     </div>
-                    <div className="text-gray-400 text-xs mt-1">
+                    <div className="text-gray-400 text-sm text-center">
                       2025/5/24
                     </div>
                   </div>
@@ -495,70 +594,70 @@ const EstateDashboard = () => {
               {/* Status Button */}
               <button 
                 onClick={navigateToStatusDetails}
-                className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg transition-colors duration-200 text-sm"
+                className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-3 sm:px-4 rounded-lg transition-colors duration-200 text-xs sm:text-sm"
               >
                 ステータス詳細
               </button>
             </div>
 
             {/* Property card */}
-            <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl p-8 h-80 transition-all duration-300 hover:scale-105 cursor-pointer transform">
-              <div className="flex items-center gap-2 mb-6">
-                <Home className="w-6 h-6 text-green-500" />
-                <h2 className="text-lg font-bold text-green-500">あなたの物件</h2>
+            <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl p-4 sm:p-8 h-60 sm:h-80 transition-all duration-300 hover:scale-105 cursor-pointer transform">
+              <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                <Home className="w-4 h-4 sm:w-6 sm:h-6 text-green-500" />
+                <h2 className="text-sm sm:text-lg font-bold text-green-500">あなたの物件</h2>
               </div>
-              <div className="mb-4">
-                <img src="https://images.unsplash.com/photo-1448630360428-65456885c650?w=400&h=300&fit=crop&crop=house" alt="Terrace House Gate 3B" className="w-full h-20 object-cover rounded-lg transition-transform duration-300 hover:scale-110" />
+              <div className="mb-3 sm:mb-4">
+                <img src="https://images.unsplash.com/photo-1448630360428-65456885c650?w=400&h=300&fit=crop&crop=house" alt="Terrace House Gate 3B" className="w-full h-16 sm:h-20 object-cover rounded-lg transition-transform duration-300 hover:scale-110" />
               </div>
-              <div className="text-sm font-medium text-gray-700 mb-2">テラスハウスゲート3B</div>
-              <div className="text-xs text-gray-500 mb-4">岐阜県岐阜市南湖町2-1-6</div>
-              <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors duration-200">
+              <div className="text-xs sm:text-sm font-medium text-gray-700 mb-2">テラスハウスゲート3B</div>
+              <div className="text-xs text-gray-500 mb-3 sm:mb-4">岐阜県岐阜市南湖町2-1-6</div>
+              <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm transition-colors duration-200">
                 詳細を見る
               </button>
             </div>
 
             {/* Next steps */}
-            <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl p-8 h-80 transition-all duration-300 hover:scale-105 cursor-pointer transform">
-              <div className="flex items-center gap-2 mb-6">
-                <span className="text-lg font-bold text-green-500">🏔️ 次のステップ</span>
+            <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl p-4 sm:p-8 h-60 sm:h-80 transition-all duration-300 hover:scale-105 cursor-pointer transform">
+              <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                <span className="text-sm sm:text-lg font-bold text-green-500">🏔️ 次のステップ</span>
               </div>
-              <div className="relative mb-4">
-                <div className="flex items-center justify-center mb-4">
-                  <div className="w-20 h-20 border-4 border-green-500 rounded-full flex items-center justify-center bg-green-50 transition-all duration-300 hover:bg-green-100">
-                    <span className="text-sm font-bold text-green-700">内見</span>
+              <div className="relative mb-3 sm:mb-4">
+                <div className="flex items-center justify-center mb-3 sm:mb-4">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 border-4 border-green-500 rounded-full flex items-center justify-center bg-green-50 transition-all duration-300 hover:bg-green-100">
+                    <span className="text-xs sm:text-sm font-bold text-green-700">内見</span>
                   </div>
                   <div className="absolute -top-1 -right-1">
-                    <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center transition-transform duration-300 hover:scale-110">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-yellow-400 rounded-full flex items-center justify-center transition-transform duration-300 hover:scale-110">
                       <span className="text-xs">🦁</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-center space-x-2 mb-4">
-                  <div className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs transition-transform duration-300 hover:scale-110">
+                <div className="flex justify-center space-x-2 mb-3 sm:mb-4">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs transition-transform duration-300 hover:scale-110">
                     ✓
                   </div>
-                  <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs transition-transform duration-300 hover:scale-110">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs transition-transform duration-300 hover:scale-110">
                     ✓
                   </div>
                 </div>
               </div>
-              <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors duration-200">
+              <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm transition-colors duration-200">
                 詳細を見る
               </button>
             </div>
 
             {/* Points */}
-            <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl p-8 h-80 transition-all duration-300 hover:scale-105 cursor-pointer transform">
-              <div className="flex items-center gap-2 mb-6">
-                <span className="text-lg font-bold text-green-500">👤 あなたのポイント</span>
+            <div className="bg-white rounded-xl shadow-lg hover:shadow-2xl p-4 sm:p-8 h-60 sm:h-80 transition-all duration-300 hover:scale-105 cursor-pointer transform">
+              <div className="flex items-center gap-2 mb-4 sm:mb-6">
+                <span className="text-sm sm:text-lg font-bold text-green-500">👤 あなたのポイント</span>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-gray-800 mb-2 transition-colors duration-300 hover:text-green-600">128</div>
-                <div className="text-sm text-gray-500 mb-4">pt</div>
-                <div className="text-xs text-gray-600 mb-6 leading-relaxed">
+                <div className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2 transition-colors duration-300 hover:text-green-600">128</div>
+                <div className="text-sm text-gray-500 mb-3 sm:mb-4">pt</div>
+                <div className="text-xs text-gray-600 mb-4 sm:mb-6 leading-relaxed">
                   ポイントを使って素晴らしい商品や<br />テレビ賞品と交換しよう！
                 </div>
-                <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg text-sm transition-colors duration-200">
+                <button className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 sm:px-4 rounded-lg text-xs sm:text-sm transition-colors duration-200">
                   交換する
                 </button>
               </div>
@@ -567,89 +666,89 @@ const EstateDashboard = () => {
           </div>
 
           {/* Lower half - Grey background with Learning Content */}
-          <div className="bg-gray-100 p-6 flex-1">
+          <div className="bg-gray-100 p-3 sm:p-6 flex-1">
             {/* Learning Content Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3">
               <div className="flex items-center">
-                <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center mr-3">
-                  <span className="text-white text-sm">✓</span>
+                <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full flex items-center justify-center mr-2 sm:mr-3">
+                  <span className="text-white text-xs sm:text-sm">✓</span>
                 </div>
-                <span className="text-lg font-medium text-gray-800">学習コンテンツ</span>
+                <span className="text-base sm:text-lg font-medium text-gray-800">学習コンテンツ</span>
               </div>
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
                 <button
                   onClick={navigateToLearning}
-                  className="bg-yellow-400 text-black px-4 py-2 rounded text-sm hover:bg-yellow-500 flex items-center"
+                  className="bg-yellow-400 text-black px-3 sm:px-4 py-2 rounded text-xs sm:text-sm hover:bg-yellow-500 flex items-center justify-center"
                 >
-                  <Eye className="w-4 h-4 mr-1" />
+                  <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                   すべて見る
                 </button>
-                <button className="bg-gray-100 text-gray-700 px-4 py-2 rounded text-sm hover:bg-gray-200 flex items-center">
-                  <Search className="w-4 h-4 mr-1" />
+                <button className="bg-gray-100 text-gray-700 px-3 sm:px-4 py-2 rounded text-xs sm:text-sm hover:bg-gray-200 flex items-center justify-center">
+                  <Search className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                   キーワード検索
                 </button>
               </div>
             </div>
 
             {/* Three separate learning content cards */}
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {/* Card 1 */}
               <div 
                 onClick={navigateToLearning}
-                className="bg-white rounded-lg shadow-sm p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                className="bg-white rounded-lg shadow-sm p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
-                  <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=120&h=80&fit=crop&crop=house" alt="住宅購入ガイド" className="w-20 h-16 object-cover rounded mr-4" />
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium text-gray-800 mb-1">
+                  <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=120&h=80&fit=crop&crop=house" alt="住宅購入ガイド" className="w-16 h-12 sm:w-20 sm:h-16 object-cover rounded mr-3 sm:mr-4 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xs sm:text-sm font-medium text-gray-800 mb-1 line-clamp-2">
                       初回住宅購入者が失敗を避けるために読むべき10の重要なポイント
                     </h3>
                     <span className="text-xs text-gray-500">記事</span>
                   </div>
-                  <span className="text-gray-400">›</span>
+                  <span className="text-gray-400 flex-shrink-0 ml-2">›</span>
                 </div>
               </div>
 
               {/* Card 2 */}
               <div 
                 onClick={navigateToLearning}
-                className="bg-white rounded-lg shadow-sm p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                className="bg-white rounded-lg shadow-sm p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
-                  <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=120&h=80&fit=crop&crop=business" alt="Bank Loan Guide" className="w-20 h-16 object-cover rounded mr-4" />
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium text-gray-800 mb-1">
+                  <img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=120&h=80&fit=crop&crop=business" alt="Bank Loan Guide" className="w-16 h-12 sm:w-20 sm:h-16 object-cover rounded mr-3 sm:mr-4 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xs sm:text-sm font-medium text-gray-800 mb-1 line-clamp-2">
                       Where Should You Get a Home Loan? Bank Comparison and Selection Tips
                     </h3>
                     <span className="text-xs text-gray-500">Guide</span>
                   </div>
-                  <span className="text-gray-400">›</span>
+                  <span className="text-gray-400 flex-shrink-0 ml-2">›</span>
                 </div>
               </div>
 
               {/* Card 3 */}
               <div 
                 onClick={navigateToLearning}
-                className="bg-white rounded-lg shadow-sm p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+                className="bg-white rounded-lg shadow-sm p-3 sm:p-4 cursor-pointer hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
-                  <img src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=120&h=80&fit=crop&crop=house" alt="New vs Used Properties" className="w-20 h-16 object-cover rounded mr-4" />
-                  <div className="flex-1">
-                    <h3 className="text-sm font-medium text-gray-800 mb-1">
+                  <img src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?w=120&h=80&fit=crop&crop=house" alt="New vs Used Properties" className="w-16 h-12 sm:w-20 sm:h-16 object-cover rounded mr-3 sm:mr-4 flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xs sm:text-sm font-medium text-gray-800 mb-1 line-clamp-2">
                       New vs. Used: Which is Better? Complete Analysis of Pros and Cons
                     </h3>
                     <span className="text-xs text-gray-500">Analysis</span>
                   </div>
-                  <span className="text-gray-400">›</span>
+                  <span className="text-gray-400 flex-shrink-0 ml-2">›</span>
                 </div>
               </div>
             </div>
 
             {/* Article List Button */}
-            <div className="flex justify-end mt-6">
+            <div className="flex justify-end mt-4 sm:mt-6">
               <button
                 onClick={navigateToLearning}
-                className="bg-yellow-400 text-black px-6 py-2 rounded text-sm hover:bg-yellow-500"
+                className="bg-yellow-400 text-black px-4 sm:px-6 py-2 rounded text-xs sm:text-sm hover:bg-yellow-500"
               >
                 Article List
               </button>
@@ -675,6 +774,7 @@ const EstateDashboard = () => {
           onNavigateToInputSupport={navigateToInputSupport}
           onNavigateToFAQ={navigateToFAQ}
           onNavigateToLogin={handleLogout}
+          onNavigateToChecklist={navigateToChecklist}
         />
       } />
       <Route path="/admin-panel" element={<AdminPanel />} />
@@ -694,6 +794,7 @@ const EstateDashboard = () => {
           onNavigateToInputSupport={navigateToInputSupport}
           onNavigateToFAQ={navigateToFAQ}
           onNavigateToLogin={navigateToLogin}
+          onNavigateToChecklist={navigateToChecklist}
         />
       } />
       <Route path="/apartment-search" element={
@@ -706,6 +807,7 @@ const EstateDashboard = () => {
           onNavigateToInputSupport={navigateToInputSupport}
           onNavigateToFAQ={navigateToFAQ}
           onNavigateToLogin={navigateToLogin}
+          onNavigateToChecklist={navigateToChecklist}
         />
       } />
       <Route path="/property-management" element={
@@ -718,6 +820,7 @@ const EstateDashboard = () => {
           onNavigateToInputSupport={navigateToInputSupport}
           onNavigateToFAQ={navigateToFAQ}
           onNavigateToLogin={navigateToLogin}
+          onNavigateToChecklist={navigateToChecklist}
         />
       } />
       <Route path="/input-support" element={
@@ -730,6 +833,7 @@ const EstateDashboard = () => {
           onNavigateToInputSupport={navigateToInputSupport}
           onNavigateToFAQ={navigateToFAQ}
           onNavigateToLogin={navigateToLogin}
+          onNavigateToChecklist={navigateToChecklist}
         />
       } />
       <Route path="/faq" element={
@@ -742,6 +846,7 @@ const EstateDashboard = () => {
           onNavigateToInputSupport={navigateToInputSupport}
           onNavigateToFAQ={navigateToFAQ}
           onNavigateToLogin={navigateToLogin}
+          onNavigateToChecklist={navigateToChecklist}
         />
       } />
       <Route path="/status-details" element={
@@ -754,6 +859,19 @@ const EstateDashboard = () => {
           onNavigateToInputSupport={navigateToInputSupport}
           onNavigateToFAQ={navigateToFAQ}
           onNavigateToLogin={handleLogout}
+        />
+      } />
+      <Route path="/checklist" element={
+        <EnhancedChecklistPage 
+          onNavigateBack={navigateToHome}
+          onNavigateToUserManagement={navigateToUserManagement}
+          onNavigateToHome={navigateToHome}
+          onNavigateToApartmentSearch={navigateToApartmentSearch}
+          onNavigateToPropertyManagement={navigateToPropertyManagement}
+          onNavigateToInputSupport={navigateToInputSupport}
+          onNavigateToFAQ={navigateToFAQ}
+          onNavigateToLogin={handleLogout}
+          onNavigateToChecklist={navigateToChecklist}
         />
       } />
     </Routes>

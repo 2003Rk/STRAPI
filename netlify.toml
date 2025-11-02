@@ -1,13 +1,19 @@
 [build]
-  base = "ESTATE"          # correct relative path
+  base = "ESTATE/ESTATE"          # Frontend directory
   command = "npm install && npm run build"
-  publish = "ESTATE/dist"  # correct relative path
+  publish = "dist"                # Build output directory
 
 [build.environment]
-  VITE_FIREBASE_API_KEY = ""
-  VITE_FIREBASE_AUTH_DOMAIN = ""
-  VITE_FIREBASE_PROJECT_ID = ""
-  VITE_FIREBASE_STORAGE_BUCKET = ""
-  VITE_FIREBASE_MESSAGING_SENDER_ID = ""
-  VITE_FIREBASE_APP_ID = ""
-  VITE_FIREBASE_MEASUREMENT_ID = ""
+  VITE_FIREBASE_API_KEY = "AIzaSyBeR-vpBHlAnMBhsX2Aod4xej-z-GWj9kk"
+  VITE_FIREBASE_AUTH_DOMAIN = "strapi-9ab33.firebaseapp.com"
+  VITE_FIREBASE_PROJECT_ID = "strapi-9ab33"
+  VITE_FIREBASE_STORAGE_BUCKET = "strapi-9ab33.firebasestorage.app"
+  VITE_FIREBASE_MESSAGING_SENDER_ID = "236440153010"
+  VITE_FIREBASE_APP_ID = "1:236440153010:web:8ccf42648e3428ff81d2ab"
+  VITE_FIREBASE_MEASUREMENT_ID = "G-ZDVXP2VZDF"
+
+# Redirect all routes to index.html for SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

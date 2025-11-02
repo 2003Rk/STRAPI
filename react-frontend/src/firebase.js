@@ -4,13 +4,13 @@ import { getFirestore } from 'firebase/firestore';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDpqNvMPWW-KFqw6b_DhQVAoQqvvxsTew0",
-  authDomain: "strapi-9ab33.firebaseapp.com",
-  projectId: "strapi-9ab33",
-  storageBucket: "strapi-9ab33.firebasestorage.app",
-  messagingSenderId: "742787678824",
-  appId: "1:742787678824:web:608cf1b0ff68f6aaaaf1dd",
-  measurementId: "G-3Y65BQ344V"
+  apiKey: "AIzaSyBeR-vpBHlAnMBhsX2Aod4xej-z-GWj9kk",
+  authDomain: "myhome-27a27.firebaseapp.com",
+  projectId: "myhome-27a27",
+  storageBucket: "myhome-27a27.firebasestorage.app",
+  messagingSenderId: "236440153010",
+  appId: "1:236440153010:web:8ccf42648e3428ff81d2ab",
+  measurementId: "G-ZDVXP2VZDF"
 };
 
 // Initialize Firebase

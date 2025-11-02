@@ -20,17 +20,17 @@ const CommandSidebar: React.FC<CommandSidebarProps> = ({
     onLogout,
 }) => (
     <div className="w-64 bg-gray-900 text-white flex flex-col items-center py-6">
-        {/* Logo */}
-        <div className="mb-10 flex items-center flex-col">
-            <div className="text-green-400 text-3xl font-bold">△</div>
-            <p className="text-xs text-gray-300">Logo</p>
-        </div>
+       
 
         {/* Profile */}
-        <div className="w-20 h-20 bg-orange-400 rounded-full flex items-center justify-center text-white text-2xl mb-3">
-            👤
+        <div className="w-22 h-24 bg-white rounded-full flex items-center justify-center mb-3 overflow-hidden">
+            <img 
+                src="/terasuE1.png" 
+                alt="Profile" 
+                className="w-full h-full object-contain"
+            />
         </div>
-        <p className="mb-8">Name</p>
+        <p className="mb-8"></p>
 
         {/* Menu */}
         <nav className="space-y-3 w-full px-4 text-left">

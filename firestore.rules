@@ -1,7 +1,13 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow read access to all authenticated users
+    // Allow read access to users collection for authentication
+    match /users/{userId} {
+      allow read: if true; // Allow reading user data for login
+      allow write: if true; // Allow creating new users
+    }
+    
+    // Allow read access to all other documents for authenticated users
     match /{document=**} {
       allow read: if request.auth != null;
     }
