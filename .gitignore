@@ -33,3 +33,9 @@ Thumbs.db
 
 # Firebase
 firebase-service-account.json
+**/firebase-service-account.json
+**/*service-account*.json
+.env.production
+*.key
+*.pem
+*.p12

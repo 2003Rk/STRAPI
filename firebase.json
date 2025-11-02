@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "strapi-9ab33"
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}
