@@ -96,6 +96,18 @@ The system follows a modern microservices architecture:
 - **Firebase** project setup
 - **Git** for version control
 
+
+## Screenshots 📸  
+Here’s a glimpse of the ESTATE webiste  in action:  
+
+<table align="center">
+  <tr>
+    <td><img src="https://drive.google.com/uc?export=view&id=1j55VgPCZrKwvdhmzjUPTsiXzDaXwDpl9" width="200" height="500"/></td>
+    <td width="50"></td> <!-- This adds spacing -->
+  </tr>
+</table>
+
+
 ### ⚡ Installation
 
 1. **Clone the repository**
